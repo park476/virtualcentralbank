@@ -1,0 +1,174 @@
+{
+    "bus7179": {
+        "name": "견쌍섭",
+        "pw": "scrypt:32768:8:1$5y6FOpa7uOgXY8XO$cae6b171886b57df1a673955d2daf8d3eb44b282ef7d23aee4ea89e89057c770efd06b1169e6058061b97392e2a3de003a736bc71e3d5dc42fd8644f4032b51e",
+        "account": "110-154",
+        "balance": 8024,
+        "history": [
+            {
+                "date": "2026-02-25 17:55",
+                "type": "입금",
+                "target": "가상중앙은행(가입축하)",
+                "amount": 1000,
+                "balance": 1000
+            },
+            {
+                "date": "2026-02-25 18:23",
+                "type": "입금",
+                "target": "관리자(110-939)",
+                "amount": 6974,
+                "balance": 7974
+            },
+            {
+                "date": "2026-02-25 18:36",
+                "type": "관리자 회수",
+                "target": "중앙은행관리실",
+                "amount": -1000,
+                "balance": 6974
+            },
+            {
+                "date": "2026-02-25 20:10",
+                "type": "입금",
+                "target": "KFC(110-489)",
+                "amount": 50,
+                "balance": 7024
+            },
+            {
+                "date": "2026-02-25 20:11",
+                "type": "관리자 지급",
+                "target": "중앙은행관리실",
+                "amount": 1000,
+                "balance": 8024
+            }
+        ],
+        "is_active": true
+    },
+    "admin": {
+        "name": "관리자",
+        "pw": "scrypt:32768:8:1$Dua8v06hBtzSW6tw$cac0b8598894c6a0521629c15e498e0182b0989269a391203bf7967cd195feb313c736cd33585f0d0089bc01f59b7bdf67be528fa3d2fa5b625dc54432d58742",
+        "account": "110-939",
+        "balance": 99950000,
+        "history": [
+            {
+                "date": "2026-02-25 17:59",
+                "type": "입금",
+                "target": "가상중앙은행(가입축하)",
+                "amount": 1000,
+                "balance": 1000
+            },
+            {
+                "date": "2026-02-25 18:18",
+                "type": "관리자 지급",
+                "target": "중앙은행관리실",
+                "amount": 100000000,
+                "balance": 100001000
+            },
+            {
+                "date": "2026-02-25 18:23",
+                "type": "출금",
+                "target": "견쌍섭(110-154)",
+                "amount": -6974,
+                "balance": 99994026
+            },
+            {
+                "date": "2026-02-25 18:36",
+                "type": "관리자 회수",
+                "target": "중앙은행관리실",
+                "amount": -99994026,
+                "balance": 0
+            },
+            {
+                "date": "2026-02-25 18:36",
+                "type": "관리자 지급",
+                "target": "중앙은행관리실",
+                "amount": 100000000,
+                "balance": 100000000
+            },
+            {
+                "date": "2026-02-25 21:15",
+                "type": "출금",
+                "target": "KFC(110-489)",
+                "amount": -50000,
+                "balance": 99950000
+            }
+        ]
+    },
+    "zxc1111": {
+        "name": "리쭝런",
+        "pw": "scrypt:32768:8:1$jsuYxIIfqV0Npxqh$9c13ea589c3201531fe46c11dc57eb598a2f249928b0743f19c62aacfa660a545f2a7a9bc7eddff8b3a414cfb2f49d9232ae7d9884e40517564bb7f12f03c10b",
+        "account": "110-683",
+        "balance": 1000,
+        "is_active": true,
+        "history": [
+            {
+                "date": "2026-02-25 18:38",
+                "type": "입금",
+                "target": "가상중앙은행(가입축하)",
+                "amount": 1000,
+                "balance": 1000
+            }
+        ]
+    },
+    "kids0178": {
+        "name": "마오쩌둥",
+        "pw": "scrypt:32768:8:1$4WRXbfv71LWmJ93k$f669e290b10c20ac7e66d1ff89f5fd849ce1b49183e74036f153423ea52c568e54f4b46fa54166e91a92dd615a5924cae2e3c78d9d93e021b784ab2fc8970d45",
+        "account": "110-189",
+        "balance": 1000,
+        "is_active": true,
+        "history": [
+            {
+                "date": "2026-02-25 18:38",
+                "type": "입금",
+                "target": "가상중앙은행(가입축하)",
+                "amount": 1000,
+                "balance": 1000
+            }
+        ]
+    },
+    "abc1111": {
+        "name": "이쌍도",
+        "pw": "scrypt:32768:8:1$Gl0ge832bv7U8Rah$10e782178a26208b7ded4cd7d5868d2773f0b9804288098c84010c1de01e6b3f457c3f51a3c15d57db87123294cf42738f465f0f32168eca38bce05213c50cf7",
+        "account": "110-158",
+        "balance": 1000,
+        "is_active": true,
+        "history": [
+            {
+                "date": "2026-02-25 19:37",
+                "type": "입금",
+                "target": "가상중앙은행(가입축하)",
+                "amount": 1000,
+                "balance": 1000
+            }
+        ]
+    },
+    "asd1234": {
+        "name": "KFC",
+        "pw": "scrypt:32768:8:1$fwp6vFBGT1rbIVHh$31b9fe055ea41dc9164e45a773ef12349f4b6d79d60f9e92720b946d78934f2077124e00daa0ec2f4300946909adff532e85f02e86374a4bba068cba609be503",
+        "account": "110-489",
+        "balance": 50950,
+        "is_active": true,
+        "history": [
+            {
+                "date": "2026-02-25 20:09",
+                "type": "입금",
+                "target": "가상중앙은행(가입축하)",
+                "amount": 1000,
+                "balance": 1000
+            },
+            {
+                "date": "2026-02-25 20:10",
+                "type": "출금",
+                "target": "견쌍섭(110-154)",
+                "amount": -50,
+                "balance": 950
+            },
+            {
+                "date": "2026-02-25 21:15",
+                "type": "입금",
+                "target": "관리자(110-939)",
+                "amount": 50000,
+                "balance": 50950
+            }
+        ]
+    }
+}

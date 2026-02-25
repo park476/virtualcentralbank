@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>가상중앙은행 - 관리자 패널</title>
+    <style>
+        body { font-family: 'Malgun Gothic', sans-serif; background: #f4f7f6; margin: 20px; }
+        .stat-container { display: flex; gap: 20px; margin-bottom: 30px; }
+        .stat-card { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); flex: 1; text-align: center; }
+        .stat-card h2 { color: #1a73e8; margin: 0; }
+        table { width: 100%; background: white; border-collapse: collapse; border-radius: 10px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        th { background: #343a40; color: white; padding: 15px; text-align: left; }
+        td { padding: 15px; border-bottom: 1px solid #eee; }
+        tr:hover { background: #f9f9f9; }
+        .badge { padding: 5px 10px; border-radius: 15px; font-size: 12px; background: #e8f0fe; color: #1a73e8; }
+        button { color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; }
+        .btn-stop { background-color: #ff4757 !important; } /* 정지용 빨강 */
+        .btn-activate { background-color: #1a73e8 !important; } /* 해제용 파랑 */
+    </style>
+</head>
+<body>
+    <h1>🏦 가상중앙은행 관리자 시스템</h1>
+    
+    <div class="stat-container">
+        <div class="stat-card">
+            <p>총 고객 수</p>
+            <h2>{{ user_count }} 명</h2>
+        </div>
+        <div class="stat-card">
+            <p>은행 총 자산</p>
+            <h2>{{ "{:,.0f}".format(total_balance) }} NAD</h2>
+        </div>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>아이디</th>
+                <th>성함</th>
+                <th>계좌번호</th>
+                <th>현재 잔액</th>
+                <th>계좌 관리</th> </tr>
+        </thead>
+        <tbody>
+            {% for uid, info in users.items() %}
+            <tr style="opacity: '{{ 1 if info.get('is_active', True) else 0.5 }}';">
+                <td><strong>{{ uid }}</strong></td>
+                <td>{{ info.name }}</td>
+                <td><span class="badge">{{ info.account }}</span></td>
+                <td style="font-weight: bold; color: #2d8e47;">{{ "{:,.0f}".format(info.balance) }} NAD</td>
+                <td>
+                    <form action="/admin/action/{{ uid }}" method="POST" style="display: inline-flex; gap: 5px;">
+                        <input type="hidden" name="action" value="adjust">
+                        <input type="number" name="amount" placeholder="금액" style="width: 80px; padding: 5px; border: 1px solid #ddd; border-radius: 4px;">
+                        <button type="submit" style="background: #34a853; font-size: 11px; padding: 5px 10px;">적용</button>
+                    </form>
+                    
+                    <form action="/admin/action/{{ uid }}" method="POST" style="display: inline;">
+    <input type="hidden" name="action" value="toggle_status">
+    <button type="submit" class="{{ 'btn-stop' if info.get('is_active', True) else 'btn-activate' }}" 
+        style="font-size: 11px; padding: 5px 10px; margin-left: 5px;">
+    {{ "계좌정지" if info.get('is_active', True) else "정상해제" }}
+</button>
+</form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    
+    <p style="margin-top: 20px;"><a href="/dashboard" style="text-decoration: none; color: #666;">← 대시보드로 돌아가기</a></p>
+</body>
+</html>
