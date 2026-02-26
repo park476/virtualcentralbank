@@ -38,8 +38,9 @@
             letter-spacing: -3px;
             margin-bottom: 24px;
             background: linear-gradient(180deg, #ee3730 0%, #911d1a 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            -webkit-background-clip: text; /* 사파리, 크롬용 */
+                background-clip: text;         /* 표준 속성 */
+                -webkit-text-fill-color: transparent;
         }
 
         .hero p {
@@ -65,6 +66,64 @@
         .btn-login:hover { background: #d12b25; transform: translateY(-5px); box-shadow: 0 12px 25px rgba(238, 55, 48, 0.4); }
         .btn-register { background: #fff; color: var(--main-red); border: 1px solid #ffcfcd; }
         .btn-register:hover { background: var(--bg-light-red); }
+
+        /* 🚀 퀵 메뉴 */
+        .hero-menu {
+            display: flex;
+            gap: 35px;
+            margin-top: 65px;
+            justify-content: center;
+        }
+
+        .menu-link {
+            text-decoration: none;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+            transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .menu-icon {
+            width: 75px;
+            height: 75px;
+            background: #fff;
+            border-radius: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.06);
+            border: 1px solid #f0f0f2;
+            transition: 0.3s;
+            position: relative;
+        }
+
+        .menu-link:hover .menu-icon {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(238, 55, 48, 0.15);
+            border-color: #ffcfcd;
+        }
+
+        .menu-label {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--text-main);
+            letter-spacing: -0.5px;
+        }
+
+        .badge-hot {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: var(--main-red);
+            color: #fff;
+            font-size: 0.7rem;
+            padding: 3px 7px;
+            border-radius: 12px;
+            font-weight: 800;
+            border: 2px solid #fff;
+        }
 
         /* 2. 스크롤 애니메이션 섹션 */
         .section {
@@ -120,7 +179,7 @@
         .toss-card h4 { font-size: 1.8rem; margin-bottom: 15px; color: var(--main-red); }
         .toss-card p { color: var(--text-sub); line-height: 1.7; font-size: 1.2rem; }
 
-        /* 3. 다크 섹션 (싹뚝 이미지 영역) - 가독성 수정 완료 */
+        /* 3. 다크 섹션 */
         .dark-section {
             background: #000;
             color: #fff;
@@ -140,8 +199,6 @@
         }
 
         .dark-text-side { flex: 1; text-align: left; }
-        
-        /* '타협하지 않는' 텍스트 컬러 화이트로 고정 */
         .dark-text-side h2 {
             color: #ffffff;
             font-size: clamp(3rem, 5vw, 4.5rem);
@@ -151,11 +208,11 @@
             font-weight: 700;
         }
 
-        /* '싹 뚝.' 전용 그라데이션 */
         .red-highlight {
             background: linear-gradient(180deg, #ee3730 30%, #6b120f 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            -webkit-background-clip: text; /* 사파리, 크롬용 */
+                background-clip: text;         /* 표준 속성 */
+                -webkit-text-fill-color: transparent;
             display: inline-block;
         }
 
@@ -209,18 +266,53 @@
         @media (max-width: 900px) {
             .dark-flex-container { flex-direction: column; text-align: center; }
             .dark-text-side { text-align: center; }
+            .hero-menu { gap: 15px; }
+            .menu-icon { width: 60px; height: 60px; font-size: 1.5rem; }
         }
     </style>
 </head>
 <body>
 
     <section class="hero">
-        <div class="reveal">
+        <div class="reveal active">
             <h1>당신의 경험에<br>새로운 선택을</h1>
             <p>가상중앙은행이 돌아왔습니다!</p>
+            
             <div class="btn-group" style="justify-content: center;">
+                    {% if is_logged_in %}
+                <a href="/logout" class="btn btn-register">로그아웃</a>
+                <a href="/ranking" class="btn btn-login">실시간 자산 랭킹</a>
+                    {% else %}
                 <a href="javascript:void(0)" class="btn btn-login" onclick="openModal()">로그인하기</a>
                 <a href="javascript:void(0)" class="btn btn-register" onclick="openRegisterModal()">비대면 계좌 개설</a>
+                    {% endif %}
+            </div>
+
+            <div class="hero-menu">
+                {% if is_logged_in %}
+                    <a href="{{ url_for('dashboard') }}" class="menu-link">
+                {% else %}
+                    <a href="javascript:void(0)" onclick="openModal()" class="menu-link">
+                {% endif %}
+                    <div class="menu-icon">🏦</div>
+                    <span class="menu-label">뱅킹 시스템</span>
+                </a>
+
+                <a href="/community" class="menu-link">
+                    <div class="menu-icon">
+                        💬
+                        <span class="badge-hot">HOT</span>
+                    </div>
+                    <span class="menu-label">커뮤니티</span>
+                </a>
+                <a href="https://evewiki.kr" class="menu-link" target="_blank" rel="noopener noreferrer">
+                    <div class="menu-icon">📖</div>
+                    <span class="menu-label">이브위키</span>
+                </a>
+                <a href="/market" class="menu-link">
+                    <div class="menu-icon">📈</div>
+                    <span class="menu-label">증권 거래소</span>
+                </a>
             </div>
         </div>
     </section>
@@ -252,16 +344,14 @@
     <section class="dark-section">
         <div class="dark-flex-container reveal">
             <div class="dark-text-side">
-                <h2>
-                    타협하지 않는<br><span class="red-highlight">싹 뚝</span>
-                </h2>
+                <h2>타협하지 않는<br><span class="red-highlight">싹 뚝</span></h2>
                 <p style="font-size: 1.4rem; color: #a1a1a6; margin-top: 30px; line-height: 1.6;">
                     과거의 가상중앙은행은 잊으세요.<br>
                     새롭게 태어난 가상중앙은행이<br>
                     여러분에게 새로운 경험을 선사합니다.
                 </p>
             </div>
-            <div class="dark-image-side reveal">
+            <div class="dark-image-side">
                 <img src="static/SSackDDook.jpg" alt="나여 싹뚝" class="promo-image">
             </div>
         </div>
@@ -271,7 +361,11 @@
         <div class="reveal">
             <h2 style="font-size: 3.5rem;">거대 프로젝트 은행을 먼저 경험하세요</h2>
             <p style="margin-bottom: 60px; font-size: 1.3rem;">지금 가입하면 특별 가입 축하금 1,000 NAD를 즉시 지급합니다.</p>
-            <a href="javascript:void(0)" class="btn btn-login" style="font-size: 1.4rem; padding: 25px 80px;" onclick="openRegisterModal()">무료 계좌 개설하기</a>
+            {% if is_logged_in %}
+                <a href="/dashboard" class="btn btn-login" style="font-size: 1.4rem; padding: 25px 80px;">내 계좌 확인하기</a>
+            {% else %}
+                <a href="javascript:void(0)" class="btn btn-login" style="font-size: 1.4rem; padding: 25px 80px;" onclick="openRegisterModal()">무료 계좌 개설하기</a>
+            {% endif %}
         </div>
     </section>
 
@@ -288,9 +382,8 @@
     </div>
 
     <div id="registerModal">
-        <div class="modal-content" style="box-shadow: 0 40px 100px rgba(238, 55, 48, 0.15);">
+        <div class="modal-content">
             <h3 style="color: var(--main-red);">계좌 개설</h3>
-            <p style="color: var(--text-sub); margin-bottom: 20px;">가상중앙은행의 가족이 되어보세요.</p>
             <form action="/register" method="POST">
                 <input type="text" name="user_id" placeholder="아이디를 정해주세요" required>
                 <input type="password" name="pw" placeholder="비밀번호를 입력하세요" required>
@@ -306,20 +399,19 @@
     </div>
 
     <script>
+        // 모달 제어
         function openModal() { document.getElementById('loginModal').style.display = 'flex'; }
         function closeModal() { document.getElementById('loginModal').style.display = 'none'; }
-        
         function openRegisterModal() { document.getElementById('registerModal').style.display = 'flex'; }
         function closeRegisterModal() { document.getElementById('registerModal').style.display = 'none'; }
 
+        // 스크롤 애니메이션
         function reveal() {
             var reveals = document.querySelectorAll(".reveal, .dark-image-side");
             for (var i = 0; i < reveals.length; i++) {
                 var windowHeight = window.innerHeight;
                 var elementTop = reveals[i].getBoundingClientRect().top;
-                var elementBottom = reveals[i].getBoundingClientRect().bottom;
-
-                if (elementTop < windowHeight - 100 && elementBottom > 100) {
+                if (elementTop < windowHeight - 100) {
                     reveals[i].classList.add("active");
                 } else {
                     reveals[i].classList.remove("active");
@@ -327,12 +419,13 @@
             }
         }
 
+        window.addEventListener("scroll", reveal);
         window.onclick = function(event) {
             if (event.target == document.getElementById('loginModal')) closeModal();
             if (event.target == document.getElementById('registerModal')) closeRegisterModal();
         }
 
-        window.addEventListener("scroll", reveal);
+        // 초기 실행
         reveal();
     </script>
 </body>
