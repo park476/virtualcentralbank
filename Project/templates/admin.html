@@ -146,6 +146,7 @@
             border: 1px solid var(--text-dim); padding: 8px 20px; transition: 0.3s; letter-spacing: 1px;
         }
         .back-btn:hover { color: #fff; border-color: #fff; background: rgba(255,255,255,0.1); box-shadow: 0 0 15px #fff; }
+        .admin-links { display: flex; gap: 10px; align-items: center; }
 
         .system-protected {
             color: var(--neon-gold); font-size: 0.65rem; letter-spacing: 1px; font-weight: 700;
@@ -162,7 +163,10 @@
                 <p style="margin: 0; font-size: 0.7rem; color: var(--text-dim); letter-spacing: 2px;">CENTRAL BANK // CORE BANKING SYSTEM</p>
                 <h1>MONETARY_AUTHORITY_CONSOLE</h1>
             </div>
-            <a href="/dashboard" class="back-btn">TERMINATE_SESSION</a>
+            <div class="admin-links">
+                <a href="/admin/stock" class="back-btn">MARKET_CONTROL</a>
+                <a href="/dashboard" class="back-btn">TERMINATE_SESSION</a>
+            </div>
         </header>
         
         <section class="stat-grid">

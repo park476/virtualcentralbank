@@ -7,6 +7,7 @@
         :root {
             --main-red: #ee3730;
             --point-red: #ff524a;
+            --main-blue: #007aff; /* 증권 거래소용 포인트 블루 */
             --bg-light-red: #fff5f5;
             --apple-gray: #f5f5f7;
             --text-main: #1d1d1f;
@@ -39,8 +40,8 @@
             margin-bottom: 24px;
             background: linear-gradient(180deg, #ee3730 0%, #911d1a 100%);
             -webkit-background-clip: text; /* 사파리, 크롬용 */
-                background-clip: text;         /* 표준 속성 */
-                -webkit-text-fill-color: transparent;
+            background-clip: text;         /* 표준 속성 */
+            -webkit-text-fill-color: transparent;
         }
 
         .hero p {
@@ -117,6 +118,20 @@
             top: -5px;
             right: -5px;
             background: var(--main-red);
+            color: #fff;
+            font-size: 0.7rem;
+            padding: 3px 7px;
+            border-radius: 12px;
+            font-weight: 800;
+            border: 2px solid #fff;
+        }
+
+        /* 신규 배지 (거래소용) */
+        .badge-new {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: var(--main-blue);
             color: #fff;
             font-size: 0.7rem;
             padding: 3px 7px;
@@ -210,9 +225,9 @@
 
         .red-highlight {
             background: linear-gradient(180deg, #ee3730 30%, #6b120f 100%);
-            -webkit-background-clip: text; /* 사파리, 크롬용 */
-                background-clip: text;         /* 표준 속성 */
-                -webkit-text-fill-color: transparent;
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
             display: inline-block;
         }
 
@@ -305,12 +320,17 @@
                     </div>
                     <span class="menu-label">커뮤니티</span>
                 </a>
+                
                 <a href="https://evewiki.kr" class="menu-link" target="_blank" rel="noopener noreferrer">
                     <div class="menu-icon">📖</div>
                     <span class="menu-label">이브위키</span>
                 </a>
+
                 <a href="/market" class="menu-link">
-                    <div class="menu-icon">📈</div>
+                    <div class="menu-icon">
+                        📈
+                        <span class="badge-new">NEW</span>
+                    </div>
                     <span class="menu-label">증권 거래소</span>
                 </a>
             </div>
