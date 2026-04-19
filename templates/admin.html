@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>CENTRAL BANK | CORE SYSTEM</title>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Orbitron:wght@400;700&family=Pretendard:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #050507;
+            --panel-bg: rgba(20, 20, 25, 0.8);
+            --neon-red: #ff003c;
+            --neon-green: #00ff94;
+            --neon-blue: #00e5ff;
+            --neon-gold: #ffcc00;
+            --text-main: #e0e0e0;
+            --text-dim: #707075;
+        }
+
+        @keyframes glitch {
+            0% { transform: translate(0); }
+            20% { transform: translate(-2px, 2px); }
+            40% { transform: translate(-2px, -2px); }
+            60% { transform: translate(2px, 2px); }
+            80% { transform: translate(2px, -2px); }
+            100% { transform: translate(0); }
+        }
+
+        body { 
+            font-family: 'JetBrains Mono', 'Pretendard', monospace;
+            background-color: var(--bg-color);
+            background-image: 
+                radial-gradient(circle at 50% 50%, #1a1a2e 0%, #050507 100%),
+                url('https://www.transparenttextures.com/patterns/carbon-fibre.png');
+            color: var(--text-main);
+            margin: 0; padding: 40px;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: " ";
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.15) 50%), 
+                        linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
+            background-size: 100% 4px, 3px 100%;
+            pointer-events: none; z-index: 100;
+        }
+
+        .container { max-width: 1400px; margin: 0 auto; position: relative; z-index: 1; }
+
+        .admin-header {
+            display: flex; justify-content: space-between; align-items: flex-end;
+            margin-bottom: 50px; border-left: 5px solid var(--neon-red); padding-left: 20px;
+        }
+
+        .admin-header h1 { 
+            font-family: 'Orbitron', sans-serif; font-size: 2.2rem; margin: 0;
+            text-transform: uppercase; letter-spacing: 4px; color: var(--neon-red);
+            text-shadow: 0 0 20px rgba(255, 0, 60, 0.6);
+        }
+
+        .stat-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 30px; margin-bottom: 50px; }
+        
+        .stat-box { 
+            background: var(--panel-bg); backdrop-filter: blur(10px); padding: 35px; 
+            border: 1px solid rgba(255, 255, 255, 0.1); border-right: 5px solid var(--neon-blue);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        .stat-box p { font-size: 0.75rem; color: var(--text-dim); margin: 0 0 10px 0; letter-spacing: 2px; }
+        .stat-box h2 { font-family: 'Orbitron', sans-serif; font-size: 2.5rem; margin: 0; color: #fff; }
+
+        .data-wrapper { 
+            background: var(--panel-bg); border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 4px; overflow: hidden;
+        }
+
+        table { width: 100%; border-collapse: collapse; }
+        th { 
+            background: rgba(255, 255, 255, 0.03); color: var(--neon-blue); 
+            text-transform: uppercase; font-size: 0.7rem; padding: 20px; text-align: left; letter-spacing: 2px;
+        }
+
+        td { padding: 22px 20px; border-bottom: 1px solid rgba(255, 255, 255, 0.05); vertical-align: middle; }
+
+        .identifier-cell {
+            font-family: 'Pretendard', sans-serif; font-weight: 700; font-size: 1.05rem;
+            color: #ffffff; letter-spacing: -0.5px; text-shadow: 0 0 10px rgba(255, 255, 255, 0.15);
+            display: flex; align-items: center; gap: 10px;
+        }
+
+        .identifier-cell::before {
+            content: "HOLDER"; font-family: 'Orbitron', sans-serif; font-size: 0.55rem;
+            color: var(--neon-blue); opacity: 0.6; border: 1px solid var(--neon-blue);
+            padding: 2px 4px; border-radius: 2px; letter-spacing: 1px;
+        }
+
+        .root-badge {
+            font-family: 'Orbitron', sans-serif; font-size: 0.6rem; color: var(--neon-gold);
+            border: 1px solid var(--neon-gold); padding: 2px 6px; border-radius: 3px;
+            background: rgba(255, 204, 0, 0.1); text-shadow: 0 0 10px var(--neon-gold);
+        }
+
+        .id-label { font-family: 'Orbitron', sans-serif; color: var(--neon-red); font-weight: bold; font-size: 0.9rem; }
+        .acc-badge { font-family: 'JetBrains Mono', monospace; color: var(--neon-blue); border: 1px solid rgba(0, 229, 255, 0.3); padding: 4px 10px; font-size: 0.85rem; background: rgba(0, 229, 255, 0.05); }
+        .balance-val { font-family: 'Orbitron', sans-serif; color: var(--neon-green); font-size: 1.1rem; text-shadow: 0 0 10px rgba(0, 255, 148, 0.2); }
+
+        input[type="number"] {
+            background: rgba(0,0,0,0.6); border: 1px solid #444; color: var(--neon-green); 
+            padding: 8px 12px; width: 90px; font-family: 'JetBrains Mono'; outline: none; transition: 0.3s;
+        }
+        input[type="number"]:focus { border-color: var(--neon-green); box-shadow: 0 0 10px rgba(0, 255, 148, 0.2); }
+
+        .btn { 
+            padding: 10px 18px; border: none; font-family: 'Orbitron'; font-weight: 700; 
+            cursor: pointer; font-size: 0.7rem; transition: all 0.3s; text-transform: uppercase;
+        }
+        
+        .btn-inject { background: transparent; border: 1px solid var(--neon-green); color: var(--neon-green); }
+        .btn-inject:hover { background: var(--neon-green); color: #000; box-shadow: 0 0 20px var(--neon-green); }
+
+        .btn-terminate { background: transparent; border: 1px solid var(--neon-red); color: var(--neon-red); }
+        .btn-terminate:hover { background: var(--neon-red); color: #fff; box-shadow: 0 0 20px var(--neon-red); }
+
+        .btn-recover { background: transparent; border: 1px solid var(--neon-blue); color: var(--neon-blue); }
+        .btn-recover:hover { background: var(--neon-blue); color: #000; box-shadow: 0 0 20px var(--neon-blue); }
+
+        /* [NEW] 영구 소거 버튼 스타일 */
+        .btn-purge { 
+            background: transparent; border: 1px solid #ff0000; color: #ff0000; 
+            text-shadow: 0 0 5px rgba(255, 0, 0, 0.5);
+        }
+        .btn-purge:hover { 
+            background: #ff0000; color: #fff; 
+            box-shadow: 0 0 25px #ff0000; 
+            animation: glitch 0.2s infinite; 
+        }
+
+        tr:hover { background: rgba(255, 255, 255, 0.02); }
+        
+        tr.status-inactive td:not(:last-child) { filter: grayscale(1) contrast(0.5); opacity: 0.3; }
+        tr.status-inactive td:last-child { pointer-events: auto !important; opacity: 1 !important; }
+
+        .back-btn { 
+            color: var(--text-dim); text-decoration: none; font-size: 0.75rem; font-family: 'Orbitron';
+            border: 1px solid var(--text-dim); padding: 8px 20px; transition: 0.3s; letter-spacing: 1px;
+        }
+        .back-btn:hover { color: #fff; border-color: #fff; background: rgba(255,255,255,0.1); box-shadow: 0 0 15px #fff; }
+        .admin-links { display: flex; gap: 10px; align-items: center; }
+
+        .system-protected {
+            color: var(--neon-gold); font-size: 0.65rem; letter-spacing: 1px; font-weight: 700;
+            padding: 10px 15px; border: 1px dashed rgba(255, 204, 0, 0.5);
+            background: rgba(255, 204, 0, 0.05); white-space: nowrap;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="admin-header">
+            <div>
+                <p style="margin: 0; font-size: 0.7rem; color: var(--text-dim); letter-spacing: 2px;">CENTRAL BANK // CORE BANKING SYSTEM</p>
+                <h1>MONETARY_AUTHORITY_CONSOLE</h1>
+            </div>
+            <div class="admin-links">
+                <a href="/admin/stock" class="back-btn">MARKET_CONTROL</a>
+                <a href="/dashboard" class="back-btn">TERMINATE_SESSION</a>
+            </div>
+        </header>
+        
+        <section class="stat-grid">
+            <div class="stat-box">
+                <p>TOTAL_SUBJECTS</p>
+                <h2>{{ user_count }} <span style="font-size: 1rem; color: var(--text-dim);">UNITS</span></h2>
+            </div>
+            <div class="stat-box" style="border-right-color: var(--neon-gold);">
+                <p>LIQUIDITY_ON_HOLD</p>
+                <h2 style="color: var(--neon-gold);">{{ "{:,.0f}".format(total_balance) }} <span style="font-size: 1rem;">NAD</span></h2>
+            </div>
+        </section>
+
+        <div class="data-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>SUBJECT_ID</th>
+                        <th>HOLDER_NAME</th>
+                        <th>VIRTUAL_IBAN</th>
+                        <th>LIQUID_BALANCE</th>
+                        <th>EXECUTIVE_CONTROL</th> 
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for uid, info in users.items() %}
+                    {% set is_admin = (uid == 'admin') %}
+                    <tr class="{{ '' if info.is_active else 'status-inactive' }}">
+                        <td><span class="id-label">#{{ uid.upper() }}</span></td>
+                        <td>
+                            <div class="identifier-cell">
+                                {{ info.name }}
+                                {% if is_admin %}<span class="root-badge">ROOT</span>{% endif %}
+                            </div>
+                        </td>
+                        <td><span class="acc-badge">{{ info.account }}</span></td>
+                        <td><span class="balance-val">{{ "{:,.0f}".format(info.balance) }}</span> <span style="font-size: 0.7rem; color: var(--text-dim);">NAD</span></td>
+                        <td>
+                            <div style="display: flex; gap: 12px; align-items: center;">
+                                <form action="/admin/action/{{ uid }}" method="POST" style="display: flex; gap: 8px;">
+                                    <input type="hidden" name="action" value="adjust">
+                                    <input type="number" name="amount" placeholder="0.00" step="any">
+                                    <button type="submit" class="btn btn-inject">ADJUST</button>
+                                </form>
+                                
+                                {% if is_admin %}
+                                    <div class="system-protected">[SYSTEM_PROTECTED]</div>
+                                {% else %}
+                                    <form action="/admin/action/{{ uid }}" method="POST">
+                                        <input type="hidden" name="action" value="toggle_status">
+                                        <button type="submit" class="btn {{ 'btn-terminate' if info.is_active else 'btn-recover' }}">
+                                            {{ "FREEZE" if info.is_active else "UNFREEZE" }}
+                                        </button>
+                                    </form>
+
+                                    <form action="/admin/delete/{{ uid }}" method="POST" 
+                                          onsubmit="return confirm('CRITICAL: 해당 주체의 모든 데이터를 영구 소거하시겠습니까?');">
+                                        <button type="submit" class="btn btn-purge">PURGE</button>
+                                    </form>
+                                {% endif %}
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+</html>

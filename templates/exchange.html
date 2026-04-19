@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>가상중앙은행 증권</title>
+    <style>
+        :root {
+            --red: #ee3730;
+            --red-soft: #fff1f0;
+            --blue: #2f74df;
+            --blue-soft: #eef5ff;
+            --bg: #f4f5f7;
+            --panel: #ffffff;
+            --line: #e7e9ee;
+            --text: #17202a;
+            --muted: #7b8491;
+        }
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+        a { color: inherit; text-decoration: none; }
+        .topnav {
+            height: 58px;
+            background: rgba(255,255,255,0.92);
+            border-bottom: 1px solid var(--line);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 34px;
+            position: sticky;
+            top: 0;
+            z-index: 5;
+        }
+        .brand { font-size: 1.35rem; font-weight: 900; color: var(--red); letter-spacing: -0.5px; }
+        .nav { display: flex; gap: 28px; align-items: center; color: var(--muted); font-size: 0.95rem; font-weight: 800; }
+        .nav a.active { color: var(--text); }
+        .logout { border: 1px solid var(--line); border-radius: 8px; padding: 8px 14px; background: #fff; }
+
+        .wrap { padding: 22px 26px 28px; }
+        .stock-head {
+            display: grid;
+            grid-template-columns: 1.2fr 1fr;
+            gap: 18px;
+            align-items: end;
+            margin-bottom: 18px;
+        }
+        .identity { display: flex; gap: 12px; align-items: center; }
+        .avatar {
+            width: 34px; height: 34px; border-radius: 50%;
+            display: grid; place-items: center;
+            background: #eaf1ff; color: var(--blue);
+            font-weight: 900; font-size: 0.75rem;
+        }
+        .name { font-size: 1.15rem; font-weight: 900; }
+        .symbol { color: var(--muted); font-size: 0.85rem; margin-left: 6px; }
+        .price-line { margin-top: 12px; display: flex; gap: 12px; align-items: baseline; }
+        .main-price { font-size: 2.25rem; font-weight: 950; letter-spacing: 0; }
+        .change { font-weight: 900; }
+        .up { color: var(--red); }
+        .down { color: var(--blue); }
+        .flat { color: var(--muted); }
+        .metrics {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px 22px;
+            font-size: 0.9rem;
+            color: var(--muted);
+        }
+        .metric { display: flex; justify-content: space-between; gap: 10px; }
+        .metric strong { color: var(--text); }
+
+        .grid {
+            display: grid;
+            grid-template-columns: minmax(520px, 1fr) 280px 280px;
+            gap: 12px;
+            align-items: stretch;
+        }
+        .panel {
+            background: var(--panel);
+            border-radius: 8px;
+            border: 1px solid var(--line);
+            overflow: hidden;
+        }
+        .panel-pad { padding: 16px; }
+        .tabs {
+            display: flex;
+            gap: 24px;
+            border-bottom: 1px solid var(--line);
+            padding: 0 22px;
+            height: 46px;
+            align-items: center;
+            color: var(--muted);
+            font-weight: 900;
+        }
+        .tabs span.active { color: var(--text); border-bottom: 2px solid var(--text); height: 46px; display: flex; align-items: center; }
+        .range-tabs { display: flex; gap: 6px; padding: 12px 22px 0; color: var(--muted); font-weight: 800; font-size: 0.85rem; }
+        .range-tabs span { padding: 7px 10px; border-radius: 8px; }
+        .range-tabs span.active { color: #fff; background: var(--blue); }
+        .chart-box { height: 380px; padding: 8px 14px 12px; }
+        #candleChart { width: 100%; height: 100%; display: block; }
+
+        .below {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: 12px;
+        }
+        .comment, .fills { min-height: 180px; }
+        .section-title { display: flex; justify-content: space-between; color: var(--muted); font-weight: 900; margin-bottom: 18px; }
+        .empty { color: var(--muted); text-align: center; padding: 44px 0; font-size: 0.9rem; }
+
+        .stock-list { display: flex; flex-direction: column; gap: 6px; max-height: 316px; overflow-y: auto; }
+        .stock-row {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 8px;
+            padding: 11px 12px;
+            border: 1px solid var(--line);
+            border-radius: 8px;
+        }
+        .stock-row.active { border-color: var(--red); background: var(--red-soft); }
+        .stock-row-name { font-weight: 900; }
+        .stock-row-code { color: var(--muted); font-size: 0.78rem; font-weight: 800; margin-top: 3px; }
+        .stock-row-price { text-align: right; font-weight: 900; }
+        .stock-row-rate { text-align: right; font-size: 0.8rem; font-weight: 900; }
+
+        .orderbook-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 6px;
+            padding: 8px 10px;
+            font-size: 0.88rem;
+            position: relative;
+        }
+        .orderbook-row strong { text-align: right; position: relative; z-index: 1; }
+        .orderbook-row span { position: relative; z-index: 1; color: var(--muted); }
+        .ask { background: var(--blue-soft); color: var(--blue); }
+        .bid { background: var(--red-soft); color: var(--red); }
+        .current-band {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 13px 12px;
+            background: #f7f8fa;
+            border-top: 1px solid var(--line);
+            border-bottom: 1px solid var(--line);
+            font-weight: 950;
+            color: var(--red);
+        }
+        .trade-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+        .trade-table th, .trade-table td { padding: 7px 4px; text-align: right; border-bottom: 1px solid #f0f1f4; }
+        .trade-table th:first-child, .trade-table td:first-child { text-align: left; }
+        .trade-table th { color: var(--muted); font-size: 0.75rem; }
+
+        .order-tabs { display: grid; grid-template-columns: 1fr 1fr; }
+        .order-tab {
+            border: 0;
+            padding: 15px;
+            background: #fff;
+            color: var(--muted);
+            font-weight: 950;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+        .order-tab.buy.active { background: var(--red); color: #fff; }
+        .order-tab.sell.active { background: #fff; color: var(--blue); border-bottom: 2px solid var(--blue); }
+        .order-body { padding: 18px 16px; }
+        label { display: flex; justify-content: space-between; margin: 14px 0 7px; color: var(--muted); font-size: 0.85rem; font-weight: 900; }
+        input {
+            width: 100%;
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            padding: 13px 12px;
+            font-size: 1rem;
+            font-weight: 900;
+            text-align: right;
+        }
+        input:focus { outline: none; border-color: var(--red); box-shadow: 0 0 0 4px rgba(238,55,48,0.08); }
+        .chips { display: grid; grid-template-columns: repeat(4, 1fr); gap: 7px; margin-top: 10px; }
+        .chips button { border: 0; border-radius: 8px; padding: 9px 0; font-weight: 900; color: var(--muted); background: #f0f2f5; cursor: pointer; }
+        .order-info { color: var(--muted); font-size: 0.86rem; line-height: 2; margin-top: 16px; }
+        .order-info div { display: flex; justify-content: space-between; }
+        .submit {
+            width: 100%;
+            border: 0;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 18px;
+            color: #fff;
+            background: var(--red);
+            font-size: 1rem;
+            font-weight: 950;
+            cursor: pointer;
+        }
+        .submit.sell { background: var(--blue); }
+
+        @media (max-width: 1180px) {
+            .grid { grid-template-columns: 1fr; }
+            .stock-head { grid-template-columns: 1fr; }
+            .metrics { grid-template-columns: 1fr 1fr; }
+        }
+        @media (max-width: 720px) {
+            .topnav { padding: 0 14px; }
+            .nav { gap: 12px; font-size: 0.82rem; }
+            .wrap { padding: 14px; }
+            .below { grid-template-columns: 1fr; }
+            .metrics { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    {% set owned_qty = portfolio.quantity if portfolio else 0 %}
+    {% set avg_price = portfolio.avg_price if portfolio else 0 %}
+    {% set eval_amount = owned_qty * stock.current_price %}
+    {% set day_low = chart_data[-1].low %}
+    {% set day_high = chart_data[-1].high %}
+    {% set range_low = chart_data | map(attribute='low') | min %}
+    {% set range_high = chart_data | map(attribute='high') | max %}
+    {% set market_cap = stock.current_price * 1000000 %}
+
+    <header class="topnav">
+        <div style="display:flex; gap:34px; align-items:center;">
+            <a class="brand" href="/">가상중앙은행</a>
+            <nav class="nav">
+                <a href="/">홈</a>
+                <a href="/dashboard">은행</a>
+                <a class="active" href="/market">주식</a>
+                <a href="/ranking">랭킹</a>
+            </nav>
+        </div>
+        <div class="nav">
+            {% if session.get('user_id') == 'admin' %}<a href="/admin/stock">주식 관리자</a>{% endif %}
+            <a class="logout" href="/logout">로그아웃</a>
+        </div>
+    </header>
+
+    <main class="wrap">
+        <section class="stock-head">
+            <div>
+                <div class="identity">
+                    <div class="avatar">{{ stock.symbol[:2] }}</div>
+                    <div><span class="name">{{ stock.name }}</span><span class="symbol">{{ stock.symbol }}</span></div>
+                </div>
+                <div class="price-line">
+                    <span class="main-price" id="selectedPrice">{{ "{:,}".format(stock.current_price) }} NAD</span>
+                    <span class="change {{ 'up' if stock.change_rate > 0 else 'down' if stock.change_rate < 0 else 'flat' }}" id="selectedRate">
+                        {{ "%+.2f"|format(stock.change_rate) }}%
+                    </span>
+                </div>
+            </div>
+            <div class="metrics">
+                <div class="metric"><span>1일 범위</span><strong>{{ "{:,}".format(day_low) }} - {{ "{:,}".format(day_high) }}</strong></div>
+                <div class="metric"><span>거래대금</span><strong>{{ "{:,}".format(stock.current_price * 1250) }} NAD</strong></div>
+                <div class="metric"><span>보유 수량</span><strong id="ownedQtyText">{{ "{:,}".format(owned_qty) }}주</strong></div>
+                <div class="metric"><span>52주 범위</span><strong>{{ "{:,}".format(range_low) }} - {{ "{:,}".format(range_high) }}</strong></div>
+                <div class="metric"><span>평가 금액</span><strong id="evalAmount">{{ "{:,}".format(eval_amount) }} NAD</strong></div>
+                <div class="metric"><span>시가총액</span><strong id="marketCap">{{ "{:,}".format(market_cap) }} NAD</strong></div>
+            </div>
+        </section>
+
+        <section class="grid">
+            <div>
+                <div class="panel">
+                    <div class="tabs"><span class="active">차트 · 호가</span><span>커뮤니티</span></div>
+                    <div class="range-tabs"><span>1분</span><span class="active">일</span><span>주</span><span>월</span><span>년</span></div>
+                    <div class="chart-box">
+                        <svg id="candleChart" viewBox="0 0 860 380" preserveAspectRatio="none"></svg>
+                    </div>
+                </div>
+
+                <div class="below">
+                    <div class="panel panel-pad comment">
+                        <div class="section-title"><span>커뮤니티</span><a href="/community">전체 보기</a></div>
+                        <div style="font-weight:900;">믿습니다 아멘</div>
+                        <div style="color:var(--muted); margin-top:8px;">이 종목을 지켜보는 투자자들이 늘고 있습니다.</div>
+                    </div>
+                    <div class="panel panel-pad fills">
+                        <div class="section-title"><span>내 체결</span><span>미체결 주문</span></div>
+                        <div class="empty">최근 체결 내역은 은행 거래내역에서 확인할 수 있습니다.</div>
+                    </div>
+                </div>
+            </div>
+
+            <aside>
+                <div class="panel panel-pad" style="margin-bottom:12px;">
+                    <div class="section-title"><span>상장 종목</span><span>{{ stocks|length }}개</span></div>
+                    <div class="stock-list">
+                        {% for item in stocks %}
+                        <a class="stock-row {{ 'active' if item.id == stock.id else '' }}" href="/market?stock={{ item.symbol }}" data-symbol="{{ item.symbol }}">
+                            <div>
+                                <div class="stock-row-name">{{ item.name }}</div>
+                                <div class="stock-row-code">{{ item.symbol }}</div>
+                            </div>
+                            <div>
+                                <div class="stock-row-price" data-price>{{ "{:,}".format(item.current_price) }}</div>
+                                <div class="stock-row-rate {{ 'up' if item.change_rate > 0 else 'down' if item.change_rate < 0 else 'flat' }}" data-rate>{{ "%+.2f"|format(item.change_rate) }}%</div>
+                            </div>
+                        </a>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="panel">
+                    <div class="panel-pad" style="padding-bottom:8px;">
+                        <div class="section-title"><span>잔량</span><span>가격</span></div>
+                    </div>
+                    {% for ask in orderbook.asks %}
+                    <div class="orderbook-row ask"><span>{{ "{:,}".format(ask.quantity) }}</span><strong>{{ "{:,}".format(ask.price) }}</strong></div>
+                    {% endfor %}
+                    <div class="current-band"><span id="bookPrice">{{ "{:,}".format(stock.current_price) }}</span><span>{{ "%+.2f"|format(stock.change_rate) }}%</span></div>
+                    {% for bid in orderbook.bids %}
+                    <div class="orderbook-row bid"><span>{{ "{:,}".format(bid.quantity) }}</span><strong>{{ "{:,}".format(bid.price) }}</strong></div>
+                    {% endfor %}
+                    <div class="panel-pad">
+                        <div class="section-title" style="margin-top:8px;"><span>실시간 체결</span><span>시간</span></div>
+                        <table class="trade-table">
+                            <thead><tr><th>체결가</th><th>체결량</th><th>시간</th></tr></thead>
+                            <tbody>
+                                {% for trade in recent_trades %}
+                                <tr><td class="{{ 'up' if trade.price >= stock.current_price else 'down' }}">{{ "{:,}".format(trade.price) }}</td><td>{{ trade.quantity }}</td><td>{{ trade.time }}</td></tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </aside>
+
+            <aside class="panel">
+                <div class="order-tabs">
+                    <button type="button" class="order-tab buy active" id="buyTab" onclick="setMode('buy')">매수</button>
+                    <button type="button" class="order-tab sell" id="sellTab" onclick="setMode('sell')">매도</button>
+                </div>
+                <form class="order-body" action="/market/trade" method="POST">
+                    <input type="hidden" name="stock_id" value="{{ stock.id }}">
+                    <input type="hidden" name="mode" id="tradeMode" value="buy">
+                    <label><span>주문 가능</span><strong id="availableText">{{ "{:,.0f}".format(user.balance) }} NAD</strong></label>
+                    <label><span>가격</span><button type="button" style="border:0;background:transparent;color:var(--blue);font-weight:900;" onclick="useCurrentPrice()">현재가</button></label>
+                    <input id="price" type="number" value="{{ stock.current_price }}" readonly>
+                    <label><span>수량</span><button type="button" style="border:0;background:transparent;color:var(--blue);font-weight:900;" onclick="setMaxQuantity()">최대</button></label>
+                    <input id="quantity" name="quantity" type="number" min="1" placeholder="0" required>
+                    <div class="chips">
+                        <button type="button" onclick="fillRatio(10)">10%</button>
+                        <button type="button" onclick="fillRatio(25)">25%</button>
+                        <button type="button" onclick="fillRatio(50)">50%</button>
+                        <button type="button" onclick="fillRatio(100)">최대</button>
+                    </div>
+                    <div class="order-info">
+                        <div><span>내 평균가</span><strong>{{ "{:,.0f}".format(avg_price) if avg_price else '-' }}</strong></div>
+                        <div><span>보유 수량</span><strong id="ownedQtyInfo">{{ "{:,}".format(owned_qty) }}주</strong></div>
+                        <div><span>주문 총액</span><strong id="totalPrice">0 NAD</strong></div>
+                    </div>
+                    <button class="submit" id="tradeBtn" type="submit">매수 주문</button>
+                </form>
+            </aside>
+        </section>
+    </main>
+
+    <script>
+        const selectedSymbol = "{{ stock.symbol }}";
+        const chartData = {{ chart_data|tojson }};
+        const ownedQty = Number({{ owned_qty }});
+        const cashBalance = Number({{ user.balance }});
+        const quantity = document.getElementById('quantity');
+        const price = document.getElementById('price');
+        const totalPrice = document.getElementById('totalPrice');
+        const tradeMode = document.getElementById('tradeMode');
+        const tradeBtn = document.getElementById('tradeBtn');
+        const availableText = document.getElementById('availableText');
+        const selectedPrice = document.getElementById('selectedPrice');
+        const selectedRate = document.getElementById('selectedRate');
+        const bookPrice = document.getElementById('bookPrice');
+        const marketCap = document.getElementById('marketCap');
+
+        function money(v) { return Number(v).toLocaleString('ko-KR'); }
+        function cls(rate) { return rate > 0 ? 'up' : rate < 0 ? 'down' : 'flat'; }
+
+        function drawChart() {
+            const svg = document.getElementById('candleChart');
+            const width = 860, height = 380, chartH = 270, volumeTop = 290, volumeH = 70;
+            const highs = chartData.map(c => c.high);
+            const lows = chartData.map(c => c.low);
+            const volumes = chartData.map(c => c.volume);
+            const maxP = Math.max(...highs), minP = Math.min(...lows), spread = Math.max(maxP - minP, 1);
+            const maxV = Math.max(...volumes, 1);
+            const gap = width / chartData.length;
+            const candleW = Math.max(10, gap * 0.56);
+            const y = value => 22 + (maxP - value) / spread * (chartH - 34);
+            svg.innerHTML = '';
+
+            for (let i = 0; i < 6; i++) {
+                const gy = 22 + i * 52;
+                svg.insertAdjacentHTML('beforeend', `<line x1="0" y1="${gy}" x2="${width}" y2="${gy}" stroke="#edf0f4" stroke-width="1"/>`);
+            }
+
+            chartData.forEach((c, i) => {
+                const x = gap * i + gap / 2;
+                const red = c.close >= c.open;
+                const color = red ? '#ee3730' : '#2f74df';
+                const top = y(Math.max(c.open, c.close));
+                const bottom = y(Math.min(c.open, c.close));
+                const bodyH = Math.max(3, bottom - top);
+                const vh = Math.max(2, c.volume / maxV * volumeH);
+                svg.insertAdjacentHTML('beforeend', `<line x1="${x}" y1="${y(c.high)}" x2="${x}" y2="${y(c.low)}" stroke="${color}" stroke-width="2"/>`);
+                svg.insertAdjacentHTML('beforeend', `<rect x="${x - candleW / 2}" y="${top}" width="${candleW}" height="${bodyH}" fill="${color}" opacity="0.9"/>`);
+                svg.insertAdjacentHTML('beforeend', `<rect x="${x - candleW / 2}" y="${volumeTop + volumeH - vh}" width="${candleW}" height="${vh}" fill="${color}" opacity="0.32"/>`);
+                if (i % 3 === 0) svg.insertAdjacentHTML('beforeend', `<text x="${x}" y="374" text-anchor="middle" fill="#8b95a1" font-size="13">${c.label}</text>`);
+            });
+        }
+
+        function updateTotal() {
+            const total = Number(quantity.value || 0) * Number(price.value || 0);
+            totalPrice.textContent = money(total) + ' NAD';
+        }
+
+        function setMode(mode) {
+            tradeMode.value = mode;
+            document.getElementById('buyTab').className = mode === 'buy' ? 'order-tab buy active' : 'order-tab buy';
+            document.getElementById('sellTab').className = mode === 'sell' ? 'order-tab sell active' : 'order-tab sell';
+            tradeBtn.textContent = mode === 'buy' ? '매수 주문' : '매도 주문';
+            tradeBtn.className = mode === 'buy' ? 'submit' : 'submit sell';
+            availableText.textContent = mode === 'buy' ? money(cashBalance) + ' NAD' : money(ownedQty) + '주';
+            updateTotal();
+        }
+
+        function fillRatio(percent) {
+            const current = Math.max(1, Number(price.value || 1));
+            if (tradeMode.value === 'buy') {
+                quantity.value = Math.floor((cashBalance * (percent / 100)) / current);
+            } else {
+                quantity.value = Math.floor(ownedQty * (percent / 100));
+            }
+            if (Number(quantity.value) < 1) quantity.value = '';
+            updateTotal();
+        }
+
+        function setMaxQuantity() { fillRatio(100); }
+        function useCurrentPrice() { price.value = Number(price.value || {{ stock.current_price }}); updateTotal(); }
+
+        async function tickPrices() {
+            const response = await fetch('/api/stocks/tick');
+            if (!response.ok) return;
+            const data = await response.json();
+            data.stocks.forEach((stock) => {
+                const row = document.querySelector(`[data-symbol="${stock.symbol}"]`);
+                if (row) {
+                    row.querySelector('[data-price]').textContent = money(stock.current_price);
+                    const rateEl = row.querySelector('[data-rate]');
+                    rateEl.textContent = `${Number(stock.change_rate).toFixed(2)}%`;
+                    rateEl.className = `stock-row-rate ${cls(stock.change_rate)}`;
+                }
+                if (stock.symbol === selectedSymbol) {
+                    selectedPrice.textContent = money(stock.current_price) + ' NAD';
+                    selectedRate.textContent = `${Number(stock.change_rate).toFixed(2)}%`;
+                    selectedRate.className = `change ${cls(stock.change_rate)}`;
+                    bookPrice.textContent = money(stock.current_price);
+                    marketCap.textContent = money(stock.current_price * 1000000) + ' NAD';
+                    price.value = stock.current_price;
+                    const prev = chartData[chartData.length - 1];
+                    prev.close = stock.current_price;
+                    prev.high = Math.max(prev.high, stock.current_price);
+                    prev.low = Math.min(prev.low, stock.current_price);
+                    drawChart();
+                    updateTotal();
+                }
+            });
+        }
+
+        quantity.addEventListener('input', updateTotal);
+        drawChart();
+        setInterval(tickPrices, 1000);
+    </script>
+</body>
+</html>
